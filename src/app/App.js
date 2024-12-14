@@ -1,97 +1,71 @@
-import { Component } from 'react'
-import { TodoPage } from '../pages/TodoPage/TodoPage';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Layout } from '../pages/Layout';
-import { AppContext } from './context';
-
-// Создание роутера приложения, который в зависимости от url отрисовывает
-// определенную компоненту
-// Ссылка на документацию: https://reactrouter.com/en/main/start/tutorial (демонстрация нового API)
-// Ссылка на видеокурс по маршрутизации: https://www.youtube.com/playlist?list=PLiZoB8JBsdznY1XwBcBhHL9L7S_shPGVE (старый API, но смысл такой же)
-const router = createBrowserRouter([
-    {
-        // Корневая компонента по url: "/". Она отрисовывает лэйаут приложения,
-        // куда подставляется контент странички
-        path: '/',
-        element: <Layout />,
-        // Вложенные роуты, которые будут подставляться в лэйаут
-        children: [
-            {
-                // Это свойство позволяет задать элемент по умолчанию для родительского роута
-                // То есть, если в адресной строке url будет "/", то отрисуется этот element
-                index: true,
-                element: <h1>Главная страница</h1>
-            },
-            {
-                path: '/login',
-                element: <h1>Логин</h1>
-            },
-            {
-                path: '/todos',
-                element: <TodoPage />,
-                index: true
-            },
-            {
-                path: '/register',
-                element: <h1>Регистрация</h1>
-            }
-        ]
-    },
-    {
-        // Другой корневой url-путь, который тоже может содержать лейаут, а может и нет
-        path: '/root',
-        element: <h2>Другой лейаут</h2>
+import React, { useState } from 'react'
+function App() {
+    
+    function event1(){
+      const url = "http://127.0.0.1:8080/get"
+      let s = document.getElementById("in1")
+      const Request = new XMLHttpRequest();
+      Request.open('GET', url);
+      Request.addEventListener("readystatechange", () => {
+        if (Request.readyState === 4 && Request.status === 200) {
+          s.value = String(Request.responseText);
+        }
+      });
+      Request.send();
     }
-])
-
-// Компонента приложения, которая содержит состояние приложения. Именно она вмортируется в div#root, который
-// описан в index.html
-export class App extends Component {
-    constructor(props) {
-        super(props);
-
-        // Задаем объект пользователя
-        this.state = {
-            user: undefined
-        };
+    function event2(){
+      let val = document.getElementById("in2")
+      let val2 = document.getElementById("in3")
+      const url2  = "http://127.0.0.1:9000/api/user?name=" + val.value
+      const Request = new XMLHttpRequest();
+      Request.open('GET', url2);
+      Request.addEventListener("readystatechange", () => {
+        if (Request.readyState === 4 && Request.status === 200) {
+          val2.value = String(Request.responseText);
+        }
+      });
+      Request.send();
     }
+    function event3(){
+      let val4 = document.getElementById("in4")
+      const url3 = "http://127.0.0.1:3333/count"
+      const Request = new XMLHttpRequest();
+      Request.open('GET', url3);
+      Request.addEventListener("readystatechange", () => {
+        if (Request.readyState === 4 && Request.status === 200) {
+          val4.value = String(Request.responseText);
+        }
+      });
+      Request.send();
 
-    // Метод отрисовки компоненты
-    render() {
-        return (
-            // Провайдинг контекста. Контекст работает по принципу шины. Через него компонента App
-            // предоставляет данные дочерним компонентам. Использование контекста позволяет избежать такой проблемы
-            // как props drilling или сквозной передачи пропсов через множество компонент.
-            // Контекст имеет пропс value, куда мы передаем объект, содержащий данные контекста
-            // Видеоролик по React Context: https://www.youtube.com/watch?v=W_-TO_reSGs
-            // В этом ролике автор показывает синтаксис работы с контекстом для функциональных компонент. В целом можете использовать пример,
-            // который рассматривали на семинар, но так же можете воспользоваться примером из урока
-           <AppContext.Provider value={{
-                user: this.state.user,
-                login: this.#login.bind(this),
-                logout: this.#logout.bind(this)
-            }}>
-                {/* // Компонента провайдинга роутера. Ее использование важно для работы маршрутизации приложения
-                // Чтобы роутер заработал, ему необходмо передатать объект конфигурации роутера в качестве пропса */}
-                <RouterProvider router={router} />
-           </AppContext.Provider>
-        );
     }
+    function event4(){
+      const request = new XMLHttpRequest();
+      let val5 = document.getElementById("in5")
+      const url4 = "http://127.0.0.1:3333/count"
+      let params = "count=" + val5.value
+      request.open("POST", url4, true);
+      request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      request.send(params);
 
-    // Метод, имитирующий процесс авторизации пользователя
-    #login() {
-        this.setState({
-            user: {
-                name: 'Вася Пупкин',
-                email: 'Почта'
-            }
-        })
     }
+  return (
 
-    // Метод, имитирующий процесс выхода из приложения
-    #logout() {
-        this.setState({
-            user: undefined
-        })
-    }
+    <div className="App">
+      <h2>Взаимодействие с сервером 1</h2>
+      <p>ответ от сервера hello <input id= "in1" type="text"></input></p>
+      <button onClick={event1}>Получить ответ</button>
+      <h2>Взаимодействие с сервером 2</h2>
+      <p>Введите имя <input id = "in2"></input></p>
+      <p>ответ от сервера query <input id= "in3" type="text"></input></p>
+      <button onClick={event2}>Получить ответ</button>
+      <h2>Взаимодействие с сервером 3</h2>
+      <p>ответ от сервера count<input id= "in4" type="text"></input>  <button onClick = {event3}>Получить count </button></p>
+      
+      <p>Введите count <input id = "in5"></input>   <button onClick = {event4}>Отправить count </button></p>
+      
+    </div>
+  );
 }
+
+export default App;
